@@ -13,7 +13,7 @@ const ReactionsSchema = new Schema(
     },
     username: {
       type: String,
-      required: true,
+      required: true
     },
     createdAt: {
       type: Date,
@@ -32,8 +32,7 @@ const ThoughtSchema = new Schema(
   {
     thoughtText: {
       type: String,
-      unique: true,
-      required: true,
+      required: true
     },
     createdAt: {
       type: Date,
@@ -42,16 +41,29 @@ const ThoughtSchema = new Schema(
     },
     username: {
       type: String,
-      unique: true,
+      required: true
     },
     reactions: [ReactionsSchema]
   },
   {
     toJSON: {
+      virtuals: true,
       getters: true
     }
   }
 );
+
+ReactionsSchema.path('reactionBody').validate(function(reactionBody) {
+  return reactionBody.length <= 280;
+}, 'reactionBody must be no more than 280 characters');
+
+ThoughtSchema.path('thoughtText').validate(function(thoughtText) {
+  return thoughtText >= 1 && thoughtText.length <= 280;
+}, 'thoughtText must be between 1 to 280 characters');
+
+UserSchema.virtual('friendCount').get(function() {
+  return this.friends.length;
+});
 
 const Thought = model('Thought', ThoughtSchema);
 

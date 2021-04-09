@@ -1,7 +1,11 @@
 const { Thought, User } = require('../models');
 
 const ThoughtController = {
-  // add Thought to User
+
+  getAllThoughts({ params, body }, res) {
+
+  },
+
   addThought({ params, body }, res) {
     console.log(body);
     Thought.create(body)
@@ -20,6 +24,10 @@ const ThoughtController = {
         res.json(dbUserData);
       })
       .catch(err => res.json(err));
+  },
+
+  updateThought({ params, body }, res) {
+
   },
 
   addReaction({ params, body }, res) {

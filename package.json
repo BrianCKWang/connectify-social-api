@@ -1,0 +1,24 @@
+{
+  "name": "connectify-social-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.12.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrianCKWang/connectify-social-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrianCKWang/connectify-social-api/issues"
+  },
+  "homepage": "https://github.com/BrianCKWang/connectify-social-api#readme"
+}

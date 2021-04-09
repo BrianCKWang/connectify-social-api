@@ -1,24 +1,24 @@
 const router = require('express').Router();
 const {
-  addComment,
-  removeComment,
-  addReply,
-  removeReply
-} = require('../../controllers/comment-controller');
+  addThought,
+  removeThought,
+  addReaction,
+  removeReaction
+} = require('../../controllers/thought-controller');
 
-// /api/comments/<pizzaId>
+// /api/thoughts/<userId>
 router
-  .route('/:pizzaId')
-  .post(addComment);
+  .route('/:userId')
+  .post(addThought);
 
-// /api/comments/<pizzaId>/<commentId>
+// /api/thoughts/<userId>/<thoughtId>
 router
-  .route('/:pizzaId/:commentId')
-  .put(addReply)
-  .delete(removeComment);
+  .route('/:userId/:thoughtId')
+  .put(addReaction)
+  .delete(removeThought);
 
 router
-  .route('/:pizzaId/:commentId/:replyId')
-  .delete(removeReply);
+  .route('/:userId/:thoughtId/:reactionId')
+  .delete(removeReaction);
 
 module.exports = router;

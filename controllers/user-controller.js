@@ -83,10 +83,6 @@ const UserController = {
     .then(dbUserData =>{
       // delete the user from all friend list
       dbUserData.friends.forEach(friendId => {
-        console.log("friendId");
-        console.log(friendId);
-        console.log("params.id");
-        console.log(params.id);
         User.findOneAndUpdate(
           { _id: friendId },
           { $pull: { friends: params.id }}, 

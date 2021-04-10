@@ -8,6 +8,10 @@ const UserController = {
         path: 'friends',
         select: '-__v'
       })
+      .populate({
+        path: 'thoughts',
+        select: '-__v'
+      })
       .select('-__v')
       .sort({ _id: -1 })
       .then(dbUserData => res.json(dbUserData))
@@ -76,13 +80,7 @@ const UserController = {
   },
 
   addUserFriend({ params }, res) {
-
     User.findOne({ _id: params.friendId })
-    .populate({
-      path: 'friends',
-      select: '-__v'
-    })
-    .select('-__v')
     .then(dbUserData => {
       // If no User is found, send 404
       if (!dbUserData) {

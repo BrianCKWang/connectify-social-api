@@ -1,4 +1,5 @@
 const { Schema, model, Types } = require('mongoose');
+const dateFormat = require('../utils/dateFormat');
 
 const ReactionsSchema = new Schema(
   {
@@ -58,7 +59,9 @@ ReactionsSchema.path('reactionBody').validate(function(reactionBody) {
 }, 'reactionBody must be no more than 280 characters');
 
 ThoughtSchema.path('thoughtText').validate(function(thoughtText) {
-  return thoughtText >= 1 && thoughtText.length <= 280;
+  console.log("thoughtText");
+  console.log(thoughtText);
+  return thoughtText.length >= 1 && thoughtText.length <= 280;
 }, 'thoughtText must be between 1 to 280 characters');
 
 const Thought = model('Thought', ThoughtSchema);

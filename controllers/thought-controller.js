@@ -47,7 +47,7 @@ const ThoughtController = {
         // If no User is found, send 404
         if (!dbThoughtData) {
           res.status(404).json({ message: 'No thought found with this id!' });
-          return;
+          return Promise.reject();
         }
         res.json(dbThoughtData);
       })

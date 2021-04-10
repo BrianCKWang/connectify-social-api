@@ -61,10 +61,6 @@ ThoughtSchema.path('thoughtText').validate(function(thoughtText) {
   return thoughtText >= 1 && thoughtText.length <= 280;
 }, 'thoughtText must be between 1 to 280 characters');
 
-UserSchema.virtual('friendCount').get(function() {
-  return this.friends.length;
-});
-
 const Thought = model('Thought', ThoughtSchema);
 
 module.exports = Thought;

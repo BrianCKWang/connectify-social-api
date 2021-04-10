@@ -20,7 +20,7 @@ const UserSchema = new Schema(
         ref: 'Thought'
       }
     ],
-    friends: [      
+    friends: [
       {
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -38,7 +38,7 @@ const UserSchema = new Schema(
 
 UserSchema.path('email').validate(function (email) {
   var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  return emailRegex.test(email.text); // Assuming email has a text attribute
+  return emailRegex.test(email);
 }, 'The e-mail field cannot be empty.');
 
 UserSchema.virtual('friendCount').get(function() {

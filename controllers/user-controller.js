@@ -53,19 +53,10 @@ const UserController = {
 
   // update User by id
   updateUser({ params, body }, res) {
-    let originalUsername = "";
-
-    // Obtain original username by id
-    User.findOne({_id: params.id})
-      .then(dbUserData => {
-        originalUsername = dbUserData.username;
-      })
-      .then(() => {
-        return User.findOneAndUpdate(
-          { _id: params.id }, 
-          body, 
-          { new: true, runValidators: true })
-      })
+    User.findOneAndUpdate(
+    { _id: params.id }, 
+    body, 
+    { new: true, runValidators: true })
       .then(dbUserData => {
         if (!dbUserData) {
           res.status(404).json({ message: 'No user found with this id!' });
@@ -106,7 +97,6 @@ const UserController = {
                   .then();
                 })
                 .catch(err => res.json(err));
-
             })
           })
         })
@@ -137,7 +127,6 @@ const UserController = {
         )
         .catch(err => res.status(400).json(err));;
       })
-      
     })
     .then(() => {
       return User.findOneAndDelete({ _id: params.id });

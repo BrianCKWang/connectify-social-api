@@ -147,17 +147,27 @@ const ThoughtController = {
   },
 
   addReaction({ params, body }, res) {
-    Thought.findOneAndUpdate(
-      { _id: params.thoughtId },
-      { $push: { reactions: body } },
-      { new: true, runValidators: true  }
-    )
-      .then(dbUserData => {
-        if (!dbUserData) {
+    User.findOne({username: body.username})
+      .then((dbUserData => {
+        if(!dbUserData){
+          res.status(404).json({ message: 'No user found with this username!' });
+          return Promise.reject();
+        }
+        return dbUserData;
+      }))
+      .then(() => {
+        return Thought.findOneAndUpdate(
+          { _id: params.thoughtId },
+          { $push: { reactions: body } },
+          { new: true, runValidators: true  }
+        )
+      })
+      .then(dbThoughtData => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: 'No thought found with this id!' });
           return Promise.reject();
         }
-        res.json(dbUserData);
+        res.json(dbThoughtData);
       })
       .catch(err => res.json(err));
   },

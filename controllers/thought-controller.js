@@ -18,7 +18,17 @@ const ThoughtController = {
   },
 
   addThought({ params, body }, res) {
-    Thought.create(body)
+    User.findOne({ username: body.username })
+      .then(dbUserData => {
+        if (!dbUserData) {
+          res.status(404).json({ message: 'No User found with this username!' });
+          return Promise.reject();
+        }
+        return dbUserData;
+      })
+      .then(() => {
+        return Thought.create(body);
+      })
       .then(({ _id }) => {
         return User.findOneAndUpdate(
           { username: body.username },
@@ -26,12 +36,12 @@ const ThoughtController = {
           { new: true }
         );
       })
-      .then(dbUserData => {
-        if (!dbUserData) {
+      .then(dbThoughtData => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: 'No User found with this username!' });
           return Promise.reject();
         }
-        res.json(dbUserData);
+        res.json(dbThoughtData);
       })
       .catch(err => res.json(err));
   },
@@ -120,6 +130,7 @@ const ThoughtController = {
         if(!dbThoughtData){
           return res.status(404).json({ message: 'No Thought with this id!' });
         }
+        // remove thought from user before deleted
         return User.findOneAndUpdate({username: dbThoughtData.username}, {$pull: {thoughts: params.thoughtId}});
       })
       .then(()=>{

@@ -74,21 +74,41 @@ const UserController = {
         res.json(dbUserData);
       })
       .then(() => {
-        
         return User.findOne({_id: params.id})
         .then(dbUserData => {
-
           dbUserData.thoughts.forEach(thoughtId => {
             Thought.findOneAndUpdate({_id: thoughtId},{username: body.username})
             .then(dbThoughtData => {
-              console.log("dbThoughtData");
-              console.log(dbThoughtData);
               if(!dbThoughtData){
                 res.status(404).json({ message: 'No user found with this id!' });
                 return Promise.reject();
               }
             })
           });
+        })
+      })
+      .then(() => {
+        return Thought.find({})
+        .then(dbThoughtData => {
+          dbThoughtData.forEach(thought => {
+            thought.reactions.forEach(reaction => {
+              Thought.findOneAndUpdate(
+                { _id: thought._id },
+                { $pull: { reactions: { reactionId: reaction.reactionId } } },
+                { new: true }
+              )
+                .then(() => {
+                  return Thought.findOneAndUpdate(
+                    { _id: thought._id },
+                    { $push: { reactions: { reactionBody: reaction.reactionBody, username: body.username } } },
+                    { new: true }
+                  )
+                  .then();
+                })
+                .catch(err => res.json(err));
+
+            })
+          })
         })
       })
       .catch(err => res.status(400).json(err));

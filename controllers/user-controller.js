@@ -53,10 +53,19 @@ const UserController = {
 
   // update User by id
   updateUser({ params, body }, res) {
-    User.findOneAndUpdate(
-    { _id: params.id }, 
-    body, 
-    { new: true, runValidators: true })
+    let originalUsername = "";
+
+    // Obtain original username by id
+    User.findOne({_id: params.id})
+      .then(dbUserData => {
+        originalUsername = dbUserData.username;
+      })
+      .then(() => {
+        return User.findOneAndUpdate(
+          { _id: params.id }, 
+          body, 
+          { new: true, runValidators: true })
+        })
       .then(dbUserData => {
         if (!dbUserData) {
           res.status(404).json({ message: 'No user found with this id!' });
@@ -82,21 +91,21 @@ const UserController = {
         return Thought.find({})
         .then(dbThoughtData => {
           dbThoughtData.forEach(thought => {
-            thought.reactions.forEach(reaction => {
+            thought.reactions.filter(reaction => reaction.username === originalUsername).forEach(reaction => {
               Thought.findOneAndUpdate(
                 { _id: thought._id },
                 { $pull: { reactions: { reactionId: reaction.reactionId } } },
                 { new: true }
               )
-                .then(() => {
-                  return Thought.findOneAndUpdate(
-                    { _id: thought._id },
-                    { $push: { reactions: { reactionBody: reaction.reactionBody, username: body.username } } },
-                    { new: true }
-                  )
-                  .then();
-                })
-                .catch(err => res.json(err));
+              .then(() => {
+                return Thought.findOneAndUpdate(
+                  { _id: thought._id },
+                  { $push: { reactions: { reactionBody: reaction.reactionBody, username: body.username } } },
+                  { new: true }
+                )
+                .then();
+              })
+              .catch(err => res.json(err));
             })
           })
         })
@@ -106,12 +115,30 @@ const UserController = {
 
   // delete User
   deleteUser({ params }, res) {
+    let originalUsername = "";
     User.findOne({ _id: params.id })
     .then(dbUserData => {
       // delete associated thoughts
+      originalUsername = dbUserData.username;
       dbUserData.thoughts.forEach(thoughtId => {
         Thought.findOneAndDelete({ _id: thoughtId })
         .catch(err => res.status(400).json(err));;
+      })
+    })
+    .then(() => {
+      return Thought.find({})
+      .then(dbThoughtData => {
+        dbThoughtData.forEach(thought => {
+          thought.reactions.filter(reaction => reaction.username === originalUsername).forEach(reaction => {
+            Thought.findOneAndUpdate(
+              { _id: thought._id },
+              { $pull: { reactions: { reactionId: reaction.reactionId } } },
+              { new: true }
+            )
+            .then()
+            .catch(err => res.json(err));
+          })
+        })
       })
     })
     .then(() => {

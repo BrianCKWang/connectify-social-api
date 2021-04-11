@@ -53,16 +53,43 @@ const UserController = {
 
   // update User by id
   updateUser({ params, body }, res) {
-    User.findOneAndUpdate(
-      { _id: params.id }, 
-      body, 
-      { new: true, runValidators: true })
+    let originalUsername = "";
+
+    // Obtain original username by id
+    User.findOne({_id: params.id})
+      .then(dbUserData => {
+        originalUsername = dbUserData.username;
+      })
+      .then(() => {
+        return User.findOneAndUpdate(
+          { _id: params.id }, 
+          body, 
+          { new: true, runValidators: true })
+      })
       .then(dbUserData => {
         if (!dbUserData) {
           res.status(404).json({ message: 'No user found with this id!' });
           return Promise.reject();
         }
         res.json(dbUserData);
+      })
+      .then(() => {
+        
+        return User.findOne({_id: params.id})
+        .then(dbUserData => {
+
+          dbUserData.thoughts.forEach(thoughtId => {
+            Thought.findOneAndUpdate({_id: thoughtId},{username: body.username})
+            .then(dbThoughtData => {
+              console.log("dbThoughtData");
+              console.log(dbThoughtData);
+              if(!dbThoughtData){
+                res.status(404).json({ message: 'No user found with this id!' });
+                return Promise.reject();
+              }
+            })
+          });
+        })
       })
       .catch(err => res.status(400).json(err));
   },
